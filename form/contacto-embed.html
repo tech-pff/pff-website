@@ -1,0 +1,681 @@
+<!--
+  PFFSC - Sección "Contacto"
+  Página: Contacto
+  v2 (oct 2026): envío vía Apps Script con confirmación real + resumen del Aviso de Privacidad
+-->
+
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css" rel="stylesheet">
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: transparent; font-family: 'Lato', sans-serif; }
+
+  .pff-ct-wrap { padding: 16px 0 8px; }
+
+  .pff-ct-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.35fr;
+    align-items: stretch;
+    gap: 28px;
+    margin: 0 0 24px;
+  }
+
+  /* ── Columna izquierda: datos + mapa ── */
+  .pff-ct-left {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  /* ── Panel de información ── */
+  .pff-ct-info {
+    background: #0d1f3c;
+    border-radius: 8px;
+    padding: 40px 36px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 26px;
+  }
+
+  .pff-ct-info-head h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 30px;
+    font-weight: 600;
+    color: #B8C8D4;
+    line-height: 1.2;
+    margin-bottom: 10px;
+  }
+
+  .pff-ct-info-lead {
+    font-family: 'Lato', sans-serif;
+    font-size: 16px;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.72);
+    line-height: 1.7;
+  }
+
+  .pff-ct-row {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .pff-ct-ico {
+    width: 40px;
+    height: 40px;
+    background: rgba(184, 200, 212, 0.12);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .pff-ct-ico i { font-size: 19px; color: #7ec4cc; }
+
+  .pff-ct-label {
+    font-family: 'Lato', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #6ab4bc;
+    margin-bottom: 4px;
+  }
+
+  .pff-ct-val,
+  .pff-ct-val a {
+    font-family: 'Lato', sans-serif;
+    font-size: 15px;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.6;
+    text-decoration: none;
+  }
+
+  .pff-ct-val a:hover { color: #7ec4cc; }
+
+  /* ── Formulario ── */
+  .pff-ct-form {
+    background: #ffffff;
+    border: 0.5px solid rgba(13, 31, 60, 0.14);
+    border-top: 3px solid #0d1f3c;
+    border-radius: 0 0 8px 8px;
+    padding: 40px 36px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .pff-ct-form form {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .pff-ct-form h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 27px;
+    font-weight: 600;
+    color: #0d1f3c;
+    margin-bottom: 22px;
+  }
+
+  .pff-ct-field { margin-bottom: 18px; }
+
+  .pff-ct-field-grow {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .pff-ct-field-grow textarea { flex: 1; }
+
+  .pff-ct-field label {
+    display: block;
+    font-family: 'Lato', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: #4a5568;
+    margin-bottom: 6px;
+  }
+
+  .pff-ct-field input,
+  .pff-ct-field textarea {
+    width: 100%;
+    font-family: 'Lato', sans-serif;
+    font-size: 14.5px;
+    font-weight: 300;
+    color: #0d1f3c;
+    padding: 12px 15px;
+    border: 1px solid rgba(13, 31, 60, 0.18);
+    border-radius: 4px;
+    background: #fafbfc;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .pff-ct-field input:focus,
+  .pff-ct-field textarea:focus {
+    outline: none;
+    border-color: #0d1f3c;
+    box-shadow: 0 0 0 3px rgba(126, 196, 204, 0.25);
+    background: #ffffff;
+  }
+
+  .pff-ct-field textarea { resize: vertical; min-height: 120px; }
+
+  /* ── Consentimiento + resumen del aviso ── */
+  .pff-ct-consent { margin: 4px 0 18px; }
+
+  .pff-ct-consent-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .pff-ct-check {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-family: "Lato", sans-serif;
+    font-size: 13px;
+    color: #4a5568;
+    line-height: 1.5;
+    cursor: pointer;
+  }
+  .pff-ct-check input[type="checkbox"] {
+    width: auto;
+    margin-top: 3px;
+    flex-shrink: 0;
+    accent-color: #0d1f3c;
+  }
+  .pff-ct-check a,
+  .pff-ct-aviso a {
+    color: #0d1f3c;
+    font-weight: 700;
+    text-decoration: none;
+    border-bottom: 1px solid #7ec4cc;
+  }
+  .pff-ct-check a:hover,
+  .pff-ct-aviso a:hover { color: #7ec4cc; }
+
+  .pff-ct-aviso-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: 'Lato', sans-serif;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #4a7f88;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .pff-ct-aviso-toggle:hover { color: #0d1f3c; }
+  .pff-ct-aviso-toggle i { font-size: 15px; transition: transform 0.25s ease; }
+  .pff-ct-aviso-toggle[aria-expanded="true"] i { transform: rotate(180deg); }
+
+  .pff-ct-aviso {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.3s ease;
+  }
+  .pff-ct-aviso.is-open { grid-template-rows: 1fr; }
+  .pff-ct-aviso-inner { overflow: hidden; }
+
+  .pff-ct-aviso-box {
+    margin-top: 12px;
+    padding: 16px 18px;
+    background: #f4f7f9;
+    border-left: 3px solid #7ec4cc;
+    border-radius: 0 4px 4px 0;
+    max-height: 220px;
+    overflow-y: auto;
+  }
+  .pff-ct-aviso-box h3 {
+    font-family: 'Lato', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #4a7f88;
+    margin-bottom: 8px;
+  }
+  .pff-ct-aviso-box p {
+    font-family: 'Lato', sans-serif;
+    font-size: 12.5px;
+    font-weight: 400;
+    color: #4a5568;
+    line-height: 1.6;
+    margin-bottom: 8px;
+  }
+  .pff-ct-aviso-box p:last-child { margin-bottom: 0; }
+
+  .pff-ct-btn {
+    width: 100%;
+    padding: 15px;
+    background: #0d1f3c;
+    color: #ffffff;
+    font-family: 'Lato', sans-serif;
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .pff-ct-btn:hover { background: #162d50; }
+  .pff-ct-btn:disabled { background: #6c7a8f; cursor: default; }
+
+  /* ── Mensaje de error ── */
+  .pff-ct-error {
+    display: none;
+    margin-top: 14px;
+    padding: 12px 14px;
+    background: #fdf2f2;
+    border-left: 3px solid #b4413c;
+    border-radius: 0 4px 4px 0;
+    font-family: 'Lato', sans-serif;
+    font-size: 13px;
+    color: #7a2b28;
+    line-height: 1.55;
+  }
+  .pff-ct-error a { color: #7a2b28; font-weight: 700; }
+
+  /* ── Vista de "Gracias" ── */
+  .pff-ct-thanks {
+    display: none;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 14px;
+    padding: 20px 10px;
+  }
+
+  .pff-ct-thanks-ico {
+    width: 56px;
+    height: 56px;
+    background: rgba(13, 31, 60, 0.08);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .pff-ct-thanks-ico i { font-size: 28px; color: #0d1f3c; }
+
+  .pff-ct-thanks h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 25px;
+    font-weight: 600;
+    color: #0d1f3c;
+  }
+
+  .pff-ct-thanks p {
+    font-family: 'Lato', sans-serif;
+    font-size: 14.5px;
+    font-weight: 300;
+    color: #4a5568;
+    line-height: 1.7;
+    max-width: 340px;
+  }
+
+  .pff-ct-thanks-again {
+    margin-top: 6px;
+    font-family: 'Lato', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: #0d1f3c;
+    text-decoration: none;
+    border-bottom: 1px solid #0d1f3c;
+    padding-bottom: 2px;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    cursor: pointer;
+  }
+
+  /* ── Mapa ── */
+  .pff-ct-map {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 0.5px solid rgba(13, 31, 60, 0.14);
+    line-height: 0;
+  }
+
+  .pff-ct-map iframe { width: 100%; height: 220px; border: 0; }
+
+  /* ── Footer integrado ── */
+  .pff-ct-footer {
+    margin-top: 36px;
+    padding: 24px 12px 4px;
+    border-top: 1px solid rgba(13, 31, 60, 0.12);
+    text-align: center;
+  }
+
+  .pff-ct-footer p { font-family: 'Lato', sans-serif; }
+
+  .pff-footer-links {
+    font-size: 13.5px;
+    margin-bottom: 8px;
+  }
+  .pff-footer-links a {
+    color: #0d1f3c;
+    font-weight: 700;
+    text-decoration: none;
+    margin-top: 6px;
+    border-bottom: 1px solid #7ec4cc;
+    padding-bottom: 1px;
+  }
+  .pff-footer-links a:hover { color: #7ec4cc; }
+
+  .pff-ct-footer-contact,
+  .pff-ct-footer-contact a {
+    font-size: 13.5px;
+    font-weight: 400;
+    color: #4a5568;
+    text-decoration: none;
+  }
+  .pff-ct-footer-contact a:hover { color: #0d1f3c; }
+
+  .pff-ct-footer-copy {
+    font-size: 12px;
+    font-weight: 300;
+    color: #9aa7b4;
+    margin-top: 6px;
+    margin-bottom: 8px;
+    padding-bottom: 1px;
+  }
+
+  @media (max-width: 760px) {
+    .pff-ct-wrap { padding: 24px 20px 12px; }
+    .pff-ct-grid { grid-template-columns: 1fr; }
+    .pff-ct-info { padding: 32px 26px; }
+    .pff-ct-form { padding: 28px 24px; }
+    .pff-ct-map iframe { height: 240px; }
+  }
+</style>
+
+<div class="pff-ct-wrap">
+
+  <div class="pff-ct-grid">
+
+    <!-- Columna izquierda: datos + mapa -->
+    <div class="pff-ct-left">
+
+      <!-- Panel de información -->
+      <div class="pff-ct-info">
+        <div class="pff-ct-info-head">
+          <h2>Datos de contacto</h2>
+          <p class="pff-ct-info-lead">Estamos disponibles para atender tus consultas fiscales y financieras.</p>
+        </div>
+
+        <div class="pff-ct-row">
+          <div class="pff-ct-ico"><i class="ti ti-map-pin" aria-hidden="true"></i></div>
+          <div>
+            <p class="pff-ct-label">Oficina</p>
+            <p class="pff-ct-val">Juan Salvador Agraz 65, Piso 11<br>Contadero, Cuajimalpa<br>Ciudad de México</p>
+          </div>
+        </div>
+
+        <div class="pff-ct-row">
+          <div class="pff-ct-ico"><i class="ti ti-phone" aria-hidden="true"></i></div>
+          <div>
+            <p class="pff-ct-label">Teléfono</p>
+            <p class="pff-ct-val"><a href="tel:+525518575843">+52 55 1857 5843</a></p>
+          </div>
+        </div>
+
+        <div class="pff-ct-row">
+          <div class="pff-ct-ico"><i class="ti ti-mail" aria-hidden="true"></i></div>
+          <div>
+            <p class="pff-ct-label">Correo</p>
+            <p class="pff-ct-val"><a href="mailto:notificaciones@pffsc.com">notificaciones@pffsc.com</a></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mapa -->
+      <div class="pff-ct-map">
+        <iframe
+          src="https://www.google.com/maps?q=Juan%20Salvador%20Agraz%2065,%20Contadero,%20Cuajimalpa,%20CDMX&output=embed"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          title="Ubicación de Práctica Fiscal y Financiera SC"></iframe>
+      </div>
+
+    </div>
+
+    <!-- Formulario -->
+    <div class="pff-ct-form">
+      <h2 id="pff-ct-form-title">Envíanos un mensaje</h2>
+
+      <!-- Ya no usa action/target: el envío lo hace el script de abajo -->
+      <form id="pff-ct-form-el" novalidate>
+
+        <div class="pff-ct-field">
+          <label for="pff-nombre">Nombre</label>
+          <input type="text" id="pff-nombre" name="nombre" required>
+        </div>
+
+        <div class="pff-ct-field">
+          <label for="pff-correo">Correo electrónico</label>
+          <input type="email" id="pff-correo" name="correo" required>
+        </div>
+
+        <div class="pff-ct-field">
+          <label for="pff-tel">Teléfono (opcional)</label>
+          <input type="tel" id="pff-tel" name="telefono">
+        </div>
+
+        <div class="pff-ct-field pff-ct-field-grow">
+          <label for="pff-msg">Mensaje</label>
+          <textarea id="pff-msg" name="mensaje" required></textarea>
+        </div>
+
+        <!-- Consentimiento ANTES del botón + resumen desplegable -->
+        <div class="pff-ct-consent">
+          <div class="pff-ct-consent-row">
+            <label class="pff-ct-check">
+              <input type="checkbox" id="pff-consent" name="consent" required>
+              <span>He leído y acepto el <a href="https://sites.google.com/pffsc.com/practica-fiscal-y-financiera/aviso-de-privacidad" target="_blank" rel="noopener">Aviso de Privacidad</a>.</span>
+            </label>
+            <button type="button" class="pff-ct-aviso-toggle" id="pff-aviso-toggle"
+                    aria-expanded="false" aria-controls="pff-aviso">
+              Ver Aviso <i class="ti ti-chevron-down" aria-hidden="true"></i>
+            </button>
+          </div>
+
+          <div class="pff-ct-aviso" id="pff-aviso">
+            <div class="pff-ct-aviso-inner">
+              <div class="pff-ct-aviso-box">
+                <h3>Aviso de Privacidad (simplificado)</h3>
+                <p>Práctica Fiscal y Financiera, S.C. ("PFF"), con domicilio en Juan Salvador Agraz 65, Piso 11, Cuajimalpa de Morelos, 05348, CDMX, es responsable del tratamiento de sus datos personales.</p>
+                <p>Los datos que nos proporcione a través de este medio se utilizarán para atender su solicitud, contactarlo y, en su caso, prestarle los servicios de consultoría legal y financiera que requiera. De manera adicional, sus datos de contacto podrían utilizarse para fines mercadotécnicos, publicitarios y para enviarle información de interés (finalidades secundarias).</p>
+                <p>Si no desea que sus datos se traten para las finalidades secundarias, puede manifestarlo enviando un correo a <a href="mailto:notificaciones@pffsc.com">notificaciones@pffsc.com</a>.</p>
+                <p>Para conocer los datos que recabamos, las finalidades, las transferencias y los medios para ejercer sus derechos ARCO o revocar su consentimiento, consulte nuestro <a href="https://sites.google.com/pffsc.com/practica-fiscal-y-financiera/aviso-de-privacidad" target="_blank" rel="noopener">Aviso de Privacidad integral</a>.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="pff-ct-btn" id="pff-ct-submit-btn">Enviar mensaje</button>
+
+        <div class="pff-ct-error" id="pff-ct-error" role="alert">
+          No pudimos enviar tu mensaje. Inténtalo de nuevo en unos minutos o escríbenos directamente a
+          <a href="mailto:notificaciones@pffsc.com">notificaciones@pffsc.com</a>.
+        </div>
+      </form>
+
+      <div class="pff-ct-thanks" id="pff-ct-thanks">
+        <div class="pff-ct-thanks-ico"><i class="ti ti-check" aria-hidden="true"></i></div>
+        <h2>Gracias por tu mensaje.</h2>
+        <p>Un miembro de nuestro equipo te contactará a la brevedad.</p>
+        <button type="button" class="pff-ct-thanks-again" id="pff-ct-again">Enviar otro mensaje</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer integrado -->
+  <div class="pff-ct-footer">
+    <p class="pff-ct-footer-contact">
+      <a href="tel:+525518575843">+52 55 1857 5843</a>
+      &nbsp;·&nbsp;
+      <a href="mailto:notificaciones@pffsc.com">notificaciones@pffsc.com</a>
+    </p>
+    <p class="pff-ct-footer-copy">© 2026 Práctica Fiscal y Financiera SC. Todos los derechos reservados.</p>
+    <p class="pff-footer-links">
+      <a href="https://sites.google.com/pffsc.com/practica-fiscal-y-financiera/aviso-de-privacidad">Aviso de Privacidad</a>
+    </p>
+  </div>
+
+</div>
+
+<!-- 1) Resumen del Aviso de Privacidad: abrir / cerrar -->
+<script>
+  (function () {
+    var toggle = document.getElementById('pff-aviso-toggle');
+    var panel = document.getElementById('pff-aviso');
+    toggle.addEventListener('click', function () {
+      var open = panel.classList.toggle('is-open');
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      toggle.firstChild.textContent = open ? 'Ocultar resumen ' : 'Ver resumen ';
+    });
+  })();
+</script>
+
+<!-- 2) Envío al Apps Script con confirmación real -->
+<script>
+  (function () {
+    var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwctvhvw62tOi4WLxDM2q8GCPB_uP5BAGDTwjQCsa33yjtTjoNAmVvtkp0I7qHFw9Ni/exec';
+    var TIMEOUT_MS = 20000;
+
+    var form = document.getElementById('pff-ct-form-el');
+    var title = document.getElementById('pff-ct-form-title');
+    var thanks = document.getElementById('pff-ct-thanks');
+    var btn = document.getElementById('pff-ct-submit-btn');
+    var errorBox = document.getElementById('pff-ct-error');
+    var againBtn = document.getElementById('pff-ct-again');
+
+    function setSending(sending) {
+      btn.disabled = sending;
+      btn.textContent = sending ? 'Enviando...' : 'Enviar mensaje';
+    }
+
+    function showThanks() {
+      title.style.display = 'none';
+      form.style.display = 'none';
+      thanks.style.display = 'flex';
+    }
+
+    function showError() {
+      errorBox.style.display = 'block';
+      setSending(false);
+    }
+
+    form.addEventListener('submit', function (ev) {
+      ev.preventDefault();               // nosotros controlamos el envío
+      errorBox.style.display = 'none';
+
+      if (!form.checkValidity()) {       // usa los mensajes en español del script 3
+        form.reportValidity();
+        return;
+      }
+
+      var data = {
+        nombre:   form.nombre.value.trim(),
+        correo:   form.correo.value.trim(),
+        telefono: form.telefono.value.trim(),
+        mensaje:  form.mensaje.value.trim(),
+        consent:  form.consent.checked
+      };
+
+      setSending(true);
+
+      var controller = ('AbortController' in window) ? new AbortController() : null;
+      var timer = setTimeout(function () { if (controller) controller.abort(); }, TIMEOUT_MS);
+
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        // text/plain evita la verificación previa (CORS preflight) que Apps Script no acepta
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(data),
+        signal: controller ? controller.signal : undefined
+      })
+        .then(function (res) { return res.json(); })
+        .then(function (json) {
+          clearTimeout(timer);
+          if (json && json.ok === true) {
+            showThanks();                // solo si el script confirmó que guardó
+          } else {
+            showError();
+          }
+        })
+        .catch(function () {
+          clearTimeout(timer);
+          showError();
+        });
+    });
+
+    againBtn.addEventListener('click', function () {
+      form.reset();
+      thanks.style.display = 'none';
+      title.style.display = '';
+      form.style.display = 'flex';
+      errorBox.style.display = 'none';
+      setSending(false);
+    });
+  })();
+</script>
+
+<!-- 3) Mensajes de validación en español (sin cambios) -->
+<script>
+  (function () {
+    var f = document.getElementById('pff-ct-form-el');
+    if (!f) return;
+
+    function mensaje(el) {
+      var v = el.validity;
+      if (v.valueMissing) {
+        return el.type === 'checkbox'
+          ? 'Marca esta casilla para continuar.'
+          : 'Llena este campo.';
+      }
+      if (v.typeMismatch && el.type === 'email') {
+        return el.value.indexOf('@') === -1
+          ? "Incluye una '@' en el correo electrónico."
+          : "Escribe un correo válido.";
+      }
+      if (v.patternMismatch) return 'El formato no es válido.';
+      return '';
+    }
+
+    function aplicar(el) {
+      el.setCustomValidity('');
+      if (!el.checkValidity()) {
+        el.setCustomValidity(mensaje(el));
+      }
+    }
+
+    var campos = f.querySelectorAll('input, textarea');
+    campos.forEach(function (el) {
+      el.addEventListener('invalid', function () { el.setCustomValidity(mensaje(el)); });
+      el.addEventListener('input',  function () { aplicar(el); });
+      el.addEventListener('change', function () { aplicar(el); });
+    });
+  })();
+</script>
